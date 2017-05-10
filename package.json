@@ -1,0 +1,11 @@
+{
+  "name": "ecue-programmer-stream",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": {},
+  "license": "MIT",
+  "dependencies": {
+    "immutable": "^3.8.1",
+    "rxjs": "^5.3.0"
+  }
+}
