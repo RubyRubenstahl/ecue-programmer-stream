@@ -23,7 +23,6 @@ function listener(onReceive, port= 4000, ip='0.0.0.0') {
 
   server.on('error', (err) => {
     console.log(`server error:\n${err.stack}`);
-    emitter.emit(err);
     server.close();
   });
 
