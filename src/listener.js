@@ -1,52 +1,88 @@
-/**
- * Created by Mike on 5/10/2017.
- */
-const dgram = require('dgram');
+using System;
+using Scripting;
+using System.IO;
 
-
-
-function listener(onReceive, port= 4000, ip='0.0.0.0') {
-  if(!onReceive){
-    throw("onReceive function is required");
-  }
-
-  if(typeof onReceive !== 'function'){
-    throw("onReceive is not a function");
-  }
-
-  const server = dgram.createSocket('udp4');
-
-  server.on('message', (msg, rInfo) => {
-    const packet = packetParser(msg, rInfo);
-    onReceive(packet);
-  });
-
-  server.on('error', (err) => {
-    console.log(`server error:\n${err.stack}`);
-    server.close();
-  });
-
-  server.on('listening', () => {
-    const address = server.address();
-    console.log(`server listening ${address.address}:${address.port}`);
-  });
-  server.bind(port, ip);
-  /**
-   * Convert any -1 in an array into null
-   * @param arr[] -  Array of numbers
-   */
-  const normalizeNull = arr => arr.map(item => item === -1 ? null : item);
+public static partial class sll{
+	
+	// Log an error message with a full stack trace
+	public static void logError(Exception e){
+		string message = String.Format("{0}\n{1}\n\n{2}", e.Message, e.StackTrace);
+		Logger.Error(message,  true);
+	}
+	
+	// Play a cue within a sequence by passing the sequence ID and the cue number
+	public static void playCue(string sequenceId, int cueNum){
+		string cueId = String.Format("{0}.Cue_{1}", sequenceId, cueNum.ToString());
+		Logger.Info(String.Format("GotoCue\n  sequenceId: {0}\n  cueNum: {1}\n  cueId {2}", sequenceId, cueNum, cueId));
+		Sequence sequence = getSequence(sequenceId);
+		Cue cue = getCue(cueId);
+		if(cue==null ) Logger.Error("Cue error");
+		sequence.StartCue(cue);
+	}
+	
+	// Set the pressed state of a toggle button
+	public static void setButtonPressed(string id, bool isPressed){
+		ActionPadToggleButtonControl button = getActionPadToggleButton(id);
+		button.ToggleOnOff =isPressed;
+	}
+	
+	// Returns true if a unix environment is detected, indicating we're running on a core S. 
+	public static bool isCoreS(){
+		return (System.Environment.OSVersion.Platform.ToString()=="Unix");
+	}
+	
+	// Return a path that is safe to store files in. 
+	// The path returned is dependant upon whether we're running on windows or a Core S
+	public static string getDataFolderPath(){
+	  if(isCoreS()){
+	    return "/mnt/data/SYMPHOLIGHT 2/CurrentShow/";
+	  }
+	  else{
+	    return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ecue/SYMPHOLIGHT 2");
+	  }
+	}
 }
 
-function  packetParser(rawMsg, rawRInfo){
-  const data =  JSON.parse(rawMsg.toString());
-  const connectionInfo = {clientIp: address, clientPort: clientPort, size} =  rawRInfo;
-  const packet = Object.assign(connectionInfo, {data});
-  // console.log(packet);
-  return packet;
+// Object getters
+public static partial class sll{
+	
+	public static Sequence getSequence(string id){
+		return (Sequence) ContentObjectAccessor.GetObject(id);
+	}
+	
+	public static Cue getCue(string id){
+		return (Cue) ContentObjectAccessor.GetObject(id);
+	}
+	
+	public static ActionPadButtonControl getActionPadButton(string id){
+		return (ActionPadButtonControl) ContentObjectAccessor.GetObject(id);
+	}
+	
+	public static ActionPadToggleButtonControl getActionPadToggleButton(string id){
+		return (ActionPadToggleButtonControl) ContentObjectAccessor.GetObject(id);
+	}
+	
+	public static ActionPadImageControl getActionPadImageControl(string id){
+		return (ActionPadImageControl) ContentObjectAccessor.GetObject(id);
+	}
+	
+	public static ActionPadLabelControl getActionPadLabel(string id){
+		return (ActionPadLabelControl) ContentObjectAccessor.GetObject(id);
+	}
+	
+	public static ActionPadFaderControl getActionPadFader(string id){
+		return (ActionPadFaderControl) ContentObjectAccessor.GetObject(id);
+	}
+	
+	public static ActionPadIFrameControl getActionPadIFrame(string id){
+		return (ActionPadIFrameControl) ContentObjectAccessor.GetObject(id);
+	}
+	
+	public static ActionPadColorPickerControl getActionPadColorPicker(string id){
+		return (ActionPadColorPickerControl) ContentObjectAccessor.GetObject(id);
+	}
+	
+	public static ActionPadColorPickerWheelControl getActionPadColorPickerWheel(string id){
+		return (ActionPadColorPickerWheelControl) ContentObjectAccessor.GetObject(id);
+	}
 }
-
-
-
-//noinspection JSUnresolvedVariable
-module.exports = listener;
