@@ -2,48 +2,23 @@
  * Created by Mike on 5/10/2017.
  */
 const dgram = require('dgram');
+const Rx = require('rxjs');
 
 
-
-function listener(onReceive, port= 4000, ip='0.0.0.0') {
-  if(!onReceive){
-    throw("onReceive function is required");
-  }
-
-  if(typeof onReceive !== 'function'){
-    throw("onReceive is not a function");
-  }
-
+function listener(port= 4000, ip='0.0.0.0') {
   const server = dgram.createSocket('udp4');
-
-  server.on('message', (msg, rInfo) => {
-    const packet = packetParser(msg, rInfo);
-    onReceive(packet);
-  });
-
-  server.on('error', (err) => {
-    console.log(`server error:\n${err.stack}`);
-    emitter.emit(err);
-    server.close();
-  });
-
-  server.on('listening', () => {
-    const address = server.address();
-    console.log(`server listening ${address.address}:${address.port}`);
-  });
+  const messages = Rx.Observable.fromEvent(server, 'message', (msg, rInfo)=>parsePacket(msg,rInfo));
+  const errors = Rx.Observable.fromEvent(server, 'error');
   server.bind(port, ip);
-  /**
-   * Convert any -1 in an array into null
-   * @param arr[] -  Array of numbers
-   */
-  const normalizeNull = arr => arr.map(item => item === -1 ? null : item);
+  return {messages, errors, port, ip};
 }
 
-function  packetParser(rawMsg, rawRInfo){
+function  parsePacket(rawMsg, rawRInfo){
   const data =  JSON.parse(rawMsg.toString());
-  const connectionInfo = {clientIp: address, clientPort: clientPort, size} =  rawRInfo;
-  const packet = Object.assign(connectionInfo, {data});
-  // console.log(packet);
+  const {address, size, port} = rawRInfo;
+   const connectionInfo = {address, size, port};
+  const packet = Object.assign({}, connectionInfo, {data});
+   //console.log(rawRInfo);
   return packet;
 }
 
