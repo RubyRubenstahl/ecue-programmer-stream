@@ -1,5 +1,4 @@
 const listener = require('./listener');
-const router = require('./packetRouter');
 const Rx = require('rxjs');
 const _ = require('underscore');
 
