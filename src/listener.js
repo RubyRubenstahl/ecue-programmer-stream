@@ -5,12 +5,14 @@ const dgram = require('dgram');
 const Rx = require('rxjs');
 
 
-function listener(port= 4000, ip='0.0.0.0') {
+function listener(port= 4000, address='0.0.0.0') {
   const server = dgram.createSocket('udp4');
-  const messages = Rx.Observable.fromEvent(server, 'message', (msg, rInfo)=>parsePacket(msg,rInfo));
+  const messages = Rx.Observable
+      .fromEvent(server, 'message', (msg, rInfo)=>parsePacket(msg,rInfo));
   const errors = Rx.Observable.fromEvent(server, 'error');
-  server.bind(port, ip);
-  return {messages, errors, port, ip};
+  server.on('error', (err)=>console.log(err));
+  server.bind({port, address});
+  return {messages, errors, port, address};
 }
 
 function  parsePacket(rawMsg, rawRInfo){

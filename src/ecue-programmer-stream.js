@@ -2,9 +2,9 @@ const listener = require('./listener');
 const Rx = require('rxjs');
 const _ = require('underscore');
 
+// TODO: make listener a dependency injection
+function programmerStream(server) {
 
-function programmerStream(port, ip) {
-  const server = listener(port, ip);
   const errors = server.errors;
 
   const currentCues = server.messages
@@ -23,8 +23,8 @@ function programmerStream(port, ip) {
   const cuelists = server.messages
       .filter(packet => packet.data.action === 'CUELIST_UPDATE')
       .groupBy(packet => packet.data.cuelist.cuelistNumber)
-      .mergeMap(groupObsv =>
-          groupObsv.distinctUntilChanged((p1, p2) => _.isEqual(p1, p2))
+      .mergeMap(cuelist =>
+          cuelist.distinctUntilChanged((p1, p2) => _.isEqual(p1, p2))
       );
 
   const all = Rx.Observable.merge(
@@ -47,7 +47,4 @@ function programmerStream(port, ip) {
   }
 }
 
-const ps = programmerStream();
-
-
-ps.all.subscribe(packet=>console.log(packet));
+module.exports = programmerStream;
