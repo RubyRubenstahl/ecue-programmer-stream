@@ -18,7 +18,6 @@ stateStream.all.subscribe(
 
 setInterval(()=>{
     console.log(commandDispatcher)
-
     commandDispatcher.send({command: 'CUELIST_PLAY', params:[1,3]});
 },2000)
 

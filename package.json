@@ -1,17 +1,37 @@
 {
   "name": "ecue-programmer-stream",
-  "version": "1.0.0",
-  "main": "index.js",
+  "version": "0.0.1",
+  "main": "src/ecue-programmer-stream.js",
+  "description": "Low level protocol connector for e:cue lighting application suite",
+  "keywords": [
+    "lighting",
+    "ecue",
+    "e:cue",
+    "dmx",
+    "dmx512"
+  ],
+  "files": [
+    "src/"
+  ],
   "scripts": {
     "start": "nodemon src/ecue-programmer-stream.js",
     "test": "nodemon test/test.js"
   },
-  "repository": {},
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/RubyRubenstahl/ecue-programmer-stream"
+  },
   "license": "MIT",
   "dependencies": {
-    "immutable": "^3.8.1",
     "redux": "^3.6.0",
     "rxjs": "^5.4.0",
     "underscore": "^1.8.3"
-  }
+  },
+  "contributors": [
+    {
+      "name": "Ruby Rubenstahl",
+      "email": "ruby@ruby-lighting.com"
+    }
+  ]
+
 }
