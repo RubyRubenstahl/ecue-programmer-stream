@@ -17,7 +17,6 @@ const dispatcher = new Rx.Subject();
   }
 
   function sendCommand(packedCommand){
-
     const socket = dgram.createSocket('udp4');
 
     socket.send(packedCommand, 9001, 'localhost', (err) => {
@@ -25,6 +24,5 @@ const dispatcher = new Rx.Subject();
     });
   }
 
-dispatcher.next({command:'CUE_PLAY', params:[3, 4]});
-dispatcher.next({command:'VM_SET_LEVEL', params:[1, 1024]});
+
 
