@@ -1,6 +1,6 @@
 {
   "name": "ecue-programmer-stream",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "src/ecue-programmer-stream.js",
   "description": "Low level protocol connector for e:cue lighting application suite",
   "keywords": [
